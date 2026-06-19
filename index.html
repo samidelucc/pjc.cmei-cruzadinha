@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🌽 Festa Cultural – Cruzadinha</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1a0a00;font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden}
+
+.band{width:100%;height:46px;background:#1a0a00;overflow:hidden;position:relative}
+.band svg{display:block;width:100%;height:100%}
+.hdr{background:linear-gradient(135deg,#2d1200,#3d1a00,#2d1200);padding:14px 20px 10px;text-align:center;border-bottom:3px solid #f4a261}
+.hdr h1{font-family:'Fredoka One',cursive;font-size:1.9rem;color:#f4a261;text-shadow:3px 3px 0 #7c3003;letter-spacing:2px}
+.hdr p{color:#e9c46a;font-size:.85rem;margin-top:3px;font-weight:700}
+
+.score{display:flex;justify-content:center;gap:12px;padding:8px 12px;background:#2d1200;border-bottom:2px solid #7c3003;flex-wrap:wrap}
+.pill{background:#3d1a00;border:2px solid #f4a261;border-radius:14px;padding:5px 14px;font-family:'Fredoka One',cursive;font-size:.88rem;color:#e9c46a}
+
+/* MAIN LAYOUT */
+.main{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 10px}
+
+/* GRADE */
+.grid-box{background:#2d1200;border:2px solid #f4a261;border-radius:14px;padding:12px;box-shadow:0 0 18px rgba(244,162,97,.3)}
+.grid-box h3{font-family:'Fredoka One',cursive;color:#f4a261;font-size:1rem;text-align:center;margin-bottom:10px;text-shadow:2px 2px 0 #7c3003}
+.grid{display:grid;gap:3px}
+.cell{width:var(--cell-size,38px);height:var(--cell-size,38px);position:relative;display:flex;align-items:center;justify-content:center;border-radius:5px}
+.cell.vazio{background:transparent;pointer-events:none}
+.cell.ativo{background:#3d1a00;border:2px solid #5a3000;cursor:pointer;transition:border-color .15s,background .15s}
+.cell.ativo:hover{border-color:#f4a261}
+.cell.sel{background:#4d2800!important;border-color:#e9c46a!important}
+.cell.certo{background:#1a3a1a!important;border-color:#4caf50!important}
+.cell.errado{background:#3a0a0a!important;border-color:#e63946!important;animation:shake .3s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.num{position:absolute;top:2px;left:3px;font-size:9px;color:#f4a261;font-weight:800;line-height:1;pointer-events:none;z-index:1}
+.letra-cell{width:100%;height:100%;background:transparent;border:none;text-align:center;font-family:'Fredoka One',cursive;font-size:1.15rem;color:#fff;text-transform:uppercase;outline:none;cursor:pointer;caret-color:transparent;padding-top:4px}
+.letra-cell.pre{color:#f4a261}
+.letra-cell.certo-txt{color:#81c784}
+.letra-cell.errado-txt{color:#e57373}
+
+/* DICAS */
+.dicas-box{background:#2d1200;border:2px solid #f4a261;border-radius:14px;padding:12px;width:100%;max-width:420px;box-shadow:0 0 18px rgba(244,162,97,.25)}
+.dicas-box h3{font-family:'Fredoka One',cursive;color:#f4a261;font-size:1rem;margin-bottom:8px;text-shadow:2px 2px 0 #7c3003}
+.dicas-cols{display:flex;gap:10px;flex-wrap:wrap}
+.dicas-col{flex:1;min-width:140px}
+.dicas-col h4{color:#e9c46a;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;padding-bottom:3px;border-bottom:1px solid #7c3003}
+.dica-item{display:flex;gap:6px;margin-bottom:6px;padding:6px 7px;border-radius:8px;border:1.5px solid transparent;cursor:pointer;transition:all .2s;align-items:flex-start}
+.dica-item:hover{border-color:#f4a261;background:#3d1a00}
+.dica-item.ativa{border-color:#e9c46a;background:#4d2800}
+.dica-item.ok{border-color:#4caf50;background:#1a3a1a}
+.dica-n{font-family:'Fredoka One',cursive;font-size:.88rem;color:#f4a261;flex-shrink:0;width:18px;text-align:center}
+.dica-item.ok .dica-n{color:#4caf50}
+.dica-t{font-size:.78rem;color:#ccc;line-height:1.35}
+.dica-item.ok .dica-t{color:#81c784}
+
+/* BOTÕES */
+.btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.btn{flex:1;min-width:120px;padding:10px 8px;border:none;border-radius:10px;font-family:'Fredoka One',cursive;font-size:.9rem;cursor:pointer;letter-spacing:1px;transition:transform .15s}
+.btn-ver{background:linear-gradient(135deg,#2a9d8f,#1a7a70);color:#fff;box-shadow:0 4px 0 #0d4a44}
+.btn-ver:hover{transform:translateY(-2px)}
+.btn-rst{background:linear-gradient(135deg,#f4a261,#e76f00);color:#2d1200;box-shadow:0 4px 0 #7c3003}
+.btn-rst:hover{transform:translateY(-2px)}
+
+/* TECLADO */
+.kbd-box{background:#2d1200;border:2px solid #f4a261;border-radius:14px;padding:10px 12px;width:100%;max-width:420px;box-shadow:0 0 18px rgba(244,162,97,.25)}
+.kbd-box h3{font-family:'Fredoka One',cursive;color:#f4a261;font-size:.95rem;text-align:center;margin-bottom:8px;text-shadow:2px 2px 0 #7c3003}
+.kbd-row{display:flex;justify-content:center;gap:5px;margin-bottom:5px}
+.key{width:34px;height:38px;background:#3d1a00;border:2px solid #5a3000;border-radius:7px;color:#f4a261;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.key:hover{background:#4d2800;border-color:#f4a261;transform:translateY(-2px)}
+.key:active{transform:translateY(1px);background:#5d3800}
+.key.wide{width:60px;font-size:.75rem}
+.key.del{width:50px;font-size:.75rem;border-color:#e63946;color:#e63946}
+
+/* VITÓRIA */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.87);z-index:100;justify-content:center;align-items:center}
+.ov.show{display:flex}
+.ov-box{background:linear-gradient(135deg,#2d1200,#3d1a00);border:4px solid #f4a261;border-radius:20px;padding:34px 42px;text-align:center;max-width:320px;box-shadow:0 0 50px rgba(244,162,97,.5);animation:popIn .5s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes popIn{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+.ov-box h2{font-family:'Fredoka One',cursive;font-size:2.1rem;color:#f4a261;text-shadow:3px 3px 0 #7c3003;margin-bottom:8px}
+.ov-box p{color:#e9c46a;font-size:.95rem;margin-bottom:14px;line-height:1.5}
+.emoji-big{font-size:2.7rem;display:block;margin-bottom:8px;animation:bounce .6s infinite alternate}
+@keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-9px)}}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);padding:9px 20px;border-radius:22px;font-weight:800;font-size:.85rem;z-index:200;transition:transform .3s;pointer-events:none;color:#fff}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.err{background:#e63946}.toast.ok{background:#4caf50}
+</style>
+</head>
+<body>
+<div class="band">
+<svg viewBox="0 0 1200 46" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,8 Q25,12 50,5 Q75,5 100,8 Q125,12 150,5 Q175,5 200,8 Q225,12 250,5 Q275,5 300,8 Q325,12 350,5 Q375,5 400,8 Q425,12 450,5 Q475,5 500,8 Q525,12 550,5 Q575,5 600,8 Q625,12 650,5 Q675,5 700,8 Q725,12 750,5 Q775,5 800,8 Q825,12 850,5 Q875,5 900,8 Q925,12 950,5 Q975,5 1000,8 Q1025,12 1050,5 Q1075,5 1100,8 Q1125,12 1150,5 Q1175,5 1200,8" stroke="#5a3a1a" stroke-width="2" fill="none" opacity="0.55"/>
+  <polygon points="7.0,8 43.0,8 25.0,40" fill="#e63946" opacity="0.93"/>
+  <line x1="10.0" y1="13" x2="40.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="57.0,8 93.0,8 75.0,40" fill="#f4a261" opacity="0.93"/>
+  <line x1="60.0" y1="13" x2="90.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="107.0,8 143.0,8 125.0,40" fill="#2a9d8f" opacity="0.93"/>
+  <line x1="110.0" y1="13" x2="140.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="157.0,8 193.0,8 175.0,40" fill="#e9c46a" opacity="0.93"/>
+  <line x1="160.0" y1="13" x2="190.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="207.0,8 243.0,8 225.0,40" fill="#264653" opacity="0.93"/>
+  <line x1="210.0" y1="13" x2="240.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="257.0,8 293.0,8 275.0,40" fill="#c1121f" opacity="0.93"/>
+  <line x1="260.0" y1="13" x2="290.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="307.0,8 343.0,8 325.0,40" fill="#e63946" opacity="0.93"/>
+  <line x1="310.0" y1="13" x2="340.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="357.0,8 393.0,8 375.0,40" fill="#f4a261" opacity="0.93"/>
+  <line x1="360.0" y1="13" x2="390.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="407.0,8 443.0,8 425.0,40" fill="#2a9d8f" opacity="0.93"/>
+  <line x1="410.0" y1="13" x2="440.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="457.0,8 493.0,8 475.0,40" fill="#e9c46a" opacity="0.93"/>
+  <line x1="460.0" y1="13" x2="490.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="507.0,8 543.0,8 525.0,40" fill="#264653" opacity="0.93"/>
+  <line x1="510.0" y1="13" x2="540.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="557.0,8 593.0,8 575.0,40" fill="#c1121f" opacity="0.93"/>
+  <line x1="560.0" y1="13" x2="590.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="607.0,8 643.0,8 625.0,40" fill="#e63946" opacity="0.93"/>
+  <line x1="610.0" y1="13" x2="640.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="657.0,8 693.0,8 675.0,40" fill="#f4a261" opacity="0.93"/>
+  <line x1="660.0" y1="13" x2="690.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="707.0,8 743.0,8 725.0,40" fill="#2a9d8f" opacity="0.93"/>
+  <line x1="710.0" y1="13" x2="740.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="757.0,8 793.0,8 775.0,40" fill="#e9c46a" opacity="0.93"/>
+  <line x1="760.0" y1="13" x2="790.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="807.0,8 843.0,8 825.0,40" fill="#264653" opacity="0.93"/>
+  <line x1="810.0" y1="13" x2="840.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="857.0,8 893.0,8 875.0,40" fill="#c1121f" opacity="0.93"/>
+  <line x1="860.0" y1="13" x2="890.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="907.0,8 943.0,8 925.0,40" fill="#e63946" opacity="0.93"/>
+  <line x1="910.0" y1="13" x2="940.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="957.0,8 993.0,8 975.0,40" fill="#f4a261" opacity="0.93"/>
+  <line x1="960.0" y1="13" x2="990.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="1007.0,8 1043.0,8 1025.0,40" fill="#2a9d8f" opacity="0.93"/>
+  <line x1="1010.0" y1="13" x2="1040.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="1057.0,8 1093.0,8 1075.0,40" fill="#e9c46a" opacity="0.93"/>
+  <line x1="1060.0" y1="13" x2="1090.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="1107.0,8 1143.0,8 1125.0,40" fill="#264653" opacity="0.93"/>
+  <line x1="1110.0" y1="13" x2="1140.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+  <polygon points="1157.0,8 1193.0,8 1175.0,40" fill="#c1121f" opacity="0.93"/>
+  <line x1="1160.0" y1="13" x2="1190.0" y2="13" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
+</svg>
+</div>
+<div class="hdr">
+  <h1>🌽 CRUZADINHA JUNINA 🌽</h1>
+  <p>Complete as palavras da Festa Cultural! Clique numa dica ou célula e use o teclado abaixo.</p>
+</div>
+<div class="score">
+  <div class="pill">Palavras: <span id="pwok">0</span>/6</div>
+  <div class="pill">Letras corretas: <span id="ltok">0</span></div>
+</div>
+
+<div class="main">
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:flex-start;width:100%;max-width:700px">
+    <!-- GRADE -->
+    <div class="grid-box">
+      <h3>🎯 Cruzadinha</h3>
+      <div class="grid" id="grid"></div>
+    </div>
+    <!-- DICAS -->
+    <div class="dicas-box" style="flex:1;min-width:180px">
+      <h3>💡 Dicas</h3>
+      <div class="dicas-cols">
+        <div class="dicas-col"><h4>➡️ Horizontal</h4><div id="dh"></div></div>
+        <div class="dicas-col"><h4>⬇️ Vertical</h4><div id="dv"></div></div>
+      </div>
+      <div class="btns">
+        <button class="btn btn-ver" onclick="verificar()">✅ Verificar</button>
+        <button class="btn btn-rst" onclick="reiniciar()">🔄 Nova Cruzadinha</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TECLADO -->
+  <div class="kbd-box">
+    <h3>⌨️ Teclado</h3>
+    <div class="kbd-row" id="kr1"></div>
+    <div class="kbd-row" id="kr2"></div>
+    <div class="kbd-row" id="kr3"></div>
+  </div>
+</div>
+
+<div class="ov" id="ov">
+  <div class="ov-box">
+    <span class="emoji-big">🎉</span>
+    <h2>Arrasou!</h2>
+    <p>Você completou toda a cruzadinha junina!<br>Especialista em festa! 🌟</p>
+    <button class="btn btn-rst" onclick="reiniciar()" style="width:auto;padding:12px 28px;font-size:1rem;margin-top:8px">🔄 Próxima Cruzadinha</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// 4 CONJUNTOS DE PALAVRAS - cada um com cruzamentos verificados
+// Ao completar uma cruzadinha, o próximo set é sorteado/rotacionado
+// ============================================================
+const WORD_SETS = [
+  // SET 1
+  {
+    rows:9, cols:9,
+    words:[
+      {id:1,word:"FORRO",   display:"FORRÓ",   dir:"H",row:0,col:0,hint:"Ritmo musical animado, dançado em pares na festa junina",pre:[0,3]},
+      {id:2,word:"FESTA",   display:"FESTA",   dir:"V",row:0,col:0,hint:"Celebração típica de junho com quadrilha e sanfona",pre:[0,2]},
+      {id:3,word:"SANFONA", display:"SANFONA", dir:"H",row:2,col:0,hint:"Instrumento de fole que não pode faltar no forró",pre:[0,4]},
+      {id:4,word:"ARRAIA",  display:"ARRAIÁ",  dir:"V",row:2,col:6,hint:"Festinha de junho com barracas, fogueira e muita animação",pre:[0,3]},
+      {id:5,word:"CANJICA", display:"CANJICA", dir:"H",row:6,col:2,hint:"Doce feito de milho branco com leite condensado e coco",pre:[0,4]},
+      {id:6,word:"MILHO",   display:"MILHO",   dir:"H",row:8,col:0,hint:"Cereal base da pamonha, canjica e do curau junino",pre:[0,3]},
+    ]
+  },
+  // SET 2
+  {
+    rows:11, cols:9,
+    words:[
+      {id:1,word:"QUADRILHA",display:"QUADRILHA",dir:"H",row:4,col:0,hint:"Dança típica com casais em fileiras, com chamador",pre:[0,4,8]},
+      {id:2,word:"VIOLA",    display:"VIOLA",    dir:"V",row:3,col:5,hint:"Instrumento de cordas usado em duplas caipiras",pre:[0,3]},
+      {id:3,word:"PIPOCA",   display:"PIPOCA",   dir:"H",row:5,col:2,hint:"Petisco estourado de milho, vendido nas barracas",pre:[0,4]},
+      {id:4,word:"BANDEIRA", display:"BANDEIRA", dir:"V",row:3,col:8,hint:"Item triangular colorido usado na decoração junina",pre:[0,4]},
+      {id:5,word:"FOGUEIRA", display:"FOGUEIRA", dir:"V",row:1,col:1,hint:"Fogo aceso que ilumina e aquece a festa junina",pre:[0,3]},
+      {id:6,word:"FOLIA",    display:"FOLIA",    dir:"H",row:2,col:0,hint:"Animação e festa contagiante, com música e alegria",pre:[0,2]},
+    ]
+  },
+  // SET 3
+  {
+    rows:9, cols:10,
+    words:[
+      {id:1,word:"BARRACA",  display:"BARRACA",  dir:"H",row:4,col:0,hint:"Tenda onde se vendem comidas e bebidas na festa",pre:[0,4]},
+      {id:2,word:"PESCARIA", display:"PESCARIA", dir:"V",row:0,col:4,hint:"Brincadeira de pescar prêmios com vara e anzol",pre:[0,4]},
+      {id:3,word:"CORDEL",   display:"CORDEL",   dir:"H",row:3,col:4,hint:"Literatura popular em versos, rimada e ilustrada",pre:[0,3]},
+      {id:4,word:"ARGOLA",   display:"ARGOLA",   dir:"V",row:3,col:2,hint:"Aro lançado para acertar pinos ou garrafas",pre:[0,3]},
+      {id:5,word:"FOGO",     display:"FOGO",     dir:"H",row:5,col:0,hint:"Elemento da fogueira, aquece as noites de junho",pre:[0,2]},
+      {id:6,word:"DANCA",    display:"DANÇA",    dir:"V",row:0,col:1,hint:"O que se faz ao som da sanfona e do forró",pre:[0,3]},
+    ]
+  },
+  // SET 4
+  {
+    rows:10, cols:13,
+    words:[
+      {id:1,word:"ESPANTALHO",display:"ESPANTALHO",dir:"H",row:4,col:0,hint:"Boneco de palha usado para proteger a plantação",pre:[0,4,8]},
+      {id:2,word:"CAIPIRA",   display:"CAIPIRA",   dir:"V",row:3,col:3,hint:"Pessoa do interior, com roupa xadrez e chapéu de palha",pre:[0,3]},
+      {id:3,word:"LARANJA",   display:"LARANJA",   dir:"H",row:8,col:1,hint:"Fruta cítrica usada para fazer quentão e suco",pre:[0,3]},
+      {id:4,word:"TRIGO",     display:"TRIGO",     dir:"V",row:0,col:9,hint:"Cereal usado para fazer o pão da festa",pre:[0,3]},
+      {id:5,word:"REI",       display:"REI",       dir:"H",row:5,col:1,hint:"Título do casamento caipira, ao lado da rainha",pre:[0,2]},
+      {id:6,word:"RAINHA",    display:"RAINHA",    dir:"H",row:2,col:7,hint:"Título dado à noiva no casamento caipira da festa",pre:[0,3]},
+    ]
+  },
+];
+
+let setAtualIdx = 0;
+let WORDS = WORD_SETS[setAtualIdx].words;
+let ROWS = WORD_SETS[setAtualIdx].rows, COLS = WORD_SETS[setAtualIdx].cols;
+let cellMap={}, inputs={}, selected=null;
+let jogoFinalizado=false;
+
+// ---- BUILD GRID DATA ----
+function buildData(){
+  cellMap={};
+  WORDS.forEach(w=>{
+    w.word.split('').forEach((ch,i)=>{
+      const r=w.dir==='H'?w.row:w.row+i;
+      const c=w.dir==='H'?w.col+i:w.col;
+      const key=`${r},${c}`;
+      if(!cellMap[key]) cellMap[key]={r,c,words:[],pre:false,letter:''};
+      cellMap[key].words.push({wid:w.id,idx:i});
+      if(w.pre.includes(i)){cellMap[key].pre=true;cellMap[key].letter=ch;}
+    });
+  });
+}
+
+// ---- RENDER GRID ----
+function renderGrid(){
+  const g=document.getElementById('grid');
+  g.innerHTML=''; inputs={};
+
+  // Tamanho de célula adaptativo: grades maiores usam células menores
+  const cellSize = COLS>10?30:(COLS>9?34:38);
+  g.style.setProperty('--cell-size', cellSize+'px');
+  g.style.gridTemplateColumns=`repeat(${COLS},${cellSize}px)`;
+  g.style.gridTemplateRows=`repeat(${ROWS},${cellSize}px)`;
+
+  const starts={};
+  WORDS.forEach(w=>starts[`${w.row},${w.col}`]=w.id);
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const key=`${r},${c}`;
+      const cd=cellMap[key];
+      const div=document.createElement('div');
+      div.className='cell '+(cd?'ativo':'vazio');
+      div.dataset.r=r; div.dataset.c=c;
+      if(cd){
+        if(starts[key]){const n=document.createElement('div');n.className='num';n.textContent=starts[key];div.appendChild(n);}
+        const inp=document.createElement('input');
+        inp.type='text'; inp.maxLength=1; inp.readOnly=true;
+        inp.className='letra-cell'+(cd.pre?' pre':'');
+        if(cd.pre){inp.value=cd.letter;}
+        inp.addEventListener('mousedown',e=>{e.preventDefault();onCellClick(r,c);});
+        inp.addEventListener('touchstart',e=>{e.preventDefault();onCellClick(r,c);},{passive:false});
+        div.appendChild(inp);
+        inputs[key]=inp;
+      }
+      g.appendChild(div);
+    }
+  }
+}
+
+// ---- RENDER DICAS ----
+function renderDicas(){
+  const dh=document.getElementById('dh'), dv=document.getElementById('dv');
+  dh.innerHTML=''; dv.innerHTML='';
+  WORDS.forEach(w=>{
+    const d=document.createElement('div');
+    d.className='dica-item'; d.id='dc'+w.id;
+    d.innerHTML=`<div class="dica-n">${w.id}.</div><div class="dica-t">${w.hint} <em style="color:#f4a261">(${w.word.length})</em></div>`;
+    d.onclick=()=>selectWord(w.id);
+    (w.dir==='H'?dh:dv).appendChild(d);
+  });
+}
+
+// ---- SELECT WORD ----
+function selectWord(wid){
+  selected=wid;
+  // Clear highlights
+  document.querySelectorAll('.cell.sel').forEach(el=>el.classList.remove('sel'));
+  document.querySelectorAll('.dica-item.ativa').forEach(el=>el.classList.remove('ativa'));
+  const w=WORDS.find(x=>x.id===wid); if(!w)return;
+  // Highlight cells
+  w.word.split('').forEach((_,i)=>{
+    const r=w.dir==='H'?w.row:w.row+i;
+    const c=w.dir==='H'?w.col+i:w.col;
+    const el=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+    if(el&&!el.classList.contains('certo'))el.classList.add('sel');
+  });
+  // Highlight dica
+  const dc=document.getElementById('dc'+wid);
+  if(dc)dc.classList.add('ativa');
+  // Focus first empty
+  for(let i=0;i<w.word.length;i++){
+    const r=w.dir==='H'?w.row:w.row+i;
+    const c=w.dir==='H'?w.col+i:w.col;
+    const inp=inputs[`${r},${c}`];
+    if(inp&&!cellMap[`${r},${c}`].pre&&(!inp.value||inp.value==='')){
+      return; // just mark, keyboard does input
+    }
+  }
+}
+
+function onCellClick(r,c){
+  const key=`${r},${c}`;
+  const cd=cellMap[key]; if(!cd)return;
+  // Determine which word to select (toggle if multiple)
+  if(cd.words.length===1){selectWord(cd.words[0].wid);return;}
+  // Multiple words: cycle
+  if(!selected||!cd.words.find(x=>x.wid===selected)){
+    selectWord(cd.words[0].wid);
+  } else {
+    const idx=cd.words.findIndex(x=>x.wid===selected);
+    selectWord(cd.words[(idx+1)%cd.words.length].wid);
+  }
+}
+
+// Verifica se todas as células ativas (não pré-preenchidas) foram preenchidas pelo jogador
+function isGridFull(){
+  for(const key in cellMap){
+    const cd=cellMap[key];
+    if(cd.pre)continue;
+    const inp=inputs[key];
+    if(!inp||!inp.value)return false;
+  }
+  return true;
+}
+
+// ---- KEYBOARD INPUT ----
+function typeChar(ch){
+  if(jogoFinalizado)return;
+  if(!selected)return;
+  const w=WORDS.find(x=>x.id===selected); if(!w)return;
+  // Find first empty cell in word
+  for(let i=0;i<w.word.length;i++){
+    const r=w.dir==='H'?w.row:w.row+i;
+    const c=w.dir==='H'?w.col+i:w.col;
+    const key=`${r},${c}`;
+    const inp=inputs[key];
+    if(!inp||cellMap[key].pre)continue;
+    if(!inp.value){
+      inp.value=ch.toUpperCase();
+      // Clear any error state
+      const el=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+      if(el){el.classList.remove('errado');}
+      inp.classList.remove('errado-txt');
+      updateCounters();
+      checarPreenchimentoCompleto();
+      return;
+    }
+  }
+  // All filled - overwrite last non-pre cell (from end)
+  for(let i=w.word.length-1;i>=0;i--){
+    const r=w.dir==='H'?w.row:w.row+i;
+    const c=w.dir==='H'?w.col+i:w.col;
+    const key=`${r},${c}`;
+    if(!cellMap[key].pre){inputs[key].value=ch.toUpperCase();updateCounters();checarPreenchimentoCompleto();return;}
+  }
+}
+
+// Dispara verificação automática quando o jogador preenche a última lacuna
+function checarPreenchimentoCompleto(){
+  if(isGridFull()){
+    setTimeout(()=>verificar(true),250);
+  }
+}
+
+function deleteChar(){
+  if(jogoFinalizado)return;
+  if(!selected)return;
+  const w=WORDS.find(x=>x.id===selected); if(!w)return;
+  // Delete last filled non-pre cell from end
+  for(let i=w.word.length-1;i>=0;i--){
+    const r=w.dir==='H'?w.row:w.row+i;
+    const c=w.dir==='H'?w.col+i:w.col;
+    const key=`${r},${c}`;
+    const inp=inputs[key];
+    if(!cellMap[key].pre&&inp&&inp.value){
+      inp.value='';
+      const el=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+      if(el){el.classList.remove('errado','certo');}
+      inp.classList.remove('errado-txt','certo-txt');
+      updateCounters();
+      return;
+    }
+  }
+}
+
+// Compara letra digitada com a esperada, aceitando variações com/sem acento (ex: A = Á)
+function letraMatch(digitada, esperada){
+  const norm = s => s.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  return norm(digitada) === norm(esperada);
+}
+
+function updateCounters(){
+  let ok=0;
+  WORDS.forEach(w=>{
+    w.word.split('').forEach((ch,i)=>{
+      const r=w.dir==='H'?w.row:w.row+i;
+      const c=w.dir==='H'?w.col+i:w.col;
+      const inp=inputs[`${r},${c}`];
+      if(inp&&letraMatch(inp.value,ch))ok++;
+    });
+  });
+  document.getElementById('ltok').textContent=ok;
+}
+
+// ---- VERIFICAR ----
+function verificar(auto){
+  if(jogoFinalizado)return;
+  let pwOk=0;
+  const erradas=[], certas=[];
+  // Clear old marks
+  document.querySelectorAll('.cell').forEach(el=>el.classList.remove('certo','errado'));
+  Object.values(inputs).forEach(inp=>inp.classList.remove('certo-txt','errado-txt'));
+
+  WORDS.forEach(w=>{
+    let allOk=true, hasAny=false;
+    w.word.split('').forEach((ch,i)=>{
+      const r=w.dir==='H'?w.row:w.row+i;
+      const c=w.dir==='H'?w.col+i:w.col;
+      const inp=inputs[`${r},${c}`];
+      if(!inp)return;
+      if(inp.value)hasAny=true;
+      if(!letraMatch(inp.value,ch))allOk=false;
+    });
+    if(allOk&&hasAny){
+      pwOk++; certas.push(w.display);
+      w.word.split('').forEach((_,i)=>{
+        const r=w.dir==='H'?w.row:w.row+i;
+        const c=w.dir==='H'?w.col+i:w.col;
+        const el=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+        const inp=inputs[`${r},${c}`];
+        if(el){el.classList.remove('sel','errado');el.classList.add('certo');}
+        if(inp)inp.classList.add('certo-txt');
+      });
+      const dc=document.getElementById('dc'+w.id);
+      if(dc){dc.classList.remove('ativa');dc.classList.add('ok');}
+    } else if(hasAny){
+      erradas.push(w.display);
+      w.word.split('').forEach((ch,i)=>{
+        const r=w.dir==='H'?w.row:w.row+i;
+        const c=w.dir==='H'?w.col+i:w.col;
+        const inp=inputs[`${r},${c}`];
+        if(inp&&!cellMap[`${r},${c}`].pre&&inp.value&&!letraMatch(inp.value,ch)){
+          const el=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+          if(el)el.classList.add('errado');
+          inp.classList.add('errado-txt');
+        }
+      });
+    }
+  });
+
+  document.getElementById('pwok').textContent=pwOk;
+  updateCounters();
+
+  if(pwOk===WORDS.length){
+    // Vitória total
+    jogoFinalizado=true;
+    setTimeout(()=>mostrarResultadoFinal(true,certas,erradas),400);
+  } else if(isGridFull()){
+    // Grade completa mas com erros - mostra relatório final mesmo assim
+    jogoFinalizado=true;
+    setTimeout(()=>mostrarResultadoFinal(false,certas,erradas),300);
+  } else if(!auto){
+    // Verificação manual parcial (botão clicado com grade incompleta)
+    if(pwOk>0)toast(`✅ ${pwOk} palavra(s) certa(s)! Continue!`,'ok');
+    else toast('❌ Revise suas respostas!','err');
+  }
+}
+
+// ---- RESULTADO FINAL (auto-detectado) ----
+function mostrarResultadoFinal(venceuTudo,certas,erradas){
+  const ov=document.getElementById('ov');
+  const titulo=ov.querySelector('h2');
+  const texto=ov.querySelector('p');
+  const emoji=ov.querySelector('.emoji-big');
+
+  if(venceuTudo){
+    emoji.textContent='🎉';
+    titulo.textContent='Mandou bem!';
+    texto.innerHTML='Você completou toda a cruzadinha e acertou todas as <strong style="color:#f4a261">'+certas.length+' palavras</strong>!<br>É um verdadeiro conhecedor da festa junina! 🌟';
+  } else {
+    emoji.textContent=erradas.length>certas.length?'😅':'👍';
+    titulo.textContent='Cruzadinha completa!';
+    let html='Você preencheu todas as lacunas.<br><br>';
+    if(certas.length){
+      html+='<strong style="color:#81c784">✅ Certas (' + certas.length + '): </strong>'+certas.join(', ')+'<br>';
+    }
+    if(erradas.length){
+      html+='<strong style="color:#e57373">❌ Erradas (' + erradas.length + '): </strong>'+erradas.join(', ');
+    }
+    texto.innerHTML=html;
+  }
+  ov.classList.add('show');
+}
+
+function reiniciar(){
+  // Avança para o próximo conjunto de palavras (rotaciona entre os 4 sets)
+  setAtualIdx = (setAtualIdx + 1) % WORD_SETS.length;
+  WORDS = WORD_SETS[setAtualIdx].words;
+  ROWS = WORD_SETS[setAtualIdx].rows;
+  COLS = WORD_SETS[setAtualIdx].cols;
+
+  selected=null;
+  jogoFinalizado=false;
+  buildData(); renderGrid(); renderDicas();
+  document.getElementById('pwok').textContent='0';
+  document.getElementById('ltok').textContent='0';
+  document.getElementById('ov').classList.remove('show');
+}
+
+function toast(msg,tipo){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+tipo+' show';
+  setTimeout(()=>t.className='toast '+tipo,2400);
+}
+
+// ---- TECLADO ----
+const ROWS_KBD=[
+  ['Q','W','E','R','T','Y','U','I','O','P'],
+  ['A','S','D','F','G','H','J','K','L'],
+  ['Z','X','C','V','B','N','M','⌫'],
+];
+function buildKbd(){
+  ROWS_KBD.forEach((row,ri)=>{
+    const el=document.getElementById('kr'+(ri+1));
+    row.forEach(k=>{
+      const btn=document.createElement('div');
+      btn.className='key'+(k==='⌫'?' del':'');
+      btn.textContent=k;
+      btn.addEventListener('mousedown',e=>{e.preventDefault();k==='⌫'?deleteChar():typeChar(k);});
+      btn.addEventListener('touchstart',e=>{e.preventDefault();k==='⌫'?deleteChar():typeChar(k);},{passive:false});
+      el.appendChild(btn);
+    });
+  });
+}
+
+// ---- PHYSICAL KEYBOARD ----
+document.addEventListener('keydown',e=>{
+  if(e.key==='Backspace'){e.preventDefault();deleteChar();}
+  else if(e.key.length===1&&e.key.match(/[a-zA-Z]/)){e.preventDefault();typeChar(e.key.toUpperCase());}
+  else if(e.key==='Enter'){verificar();}
+});
+
+// Inicialização: carrega o SET 1 sem rotacionar (reiniciar() é usado para trocar de set)
+function iniciarJogo(){
+  selected=null;
+  jogoFinalizado=false;
+  buildData(); renderGrid(); renderDicas();
+  document.getElementById('pwok').textContent='0';
+  document.getElementById('ltok').textContent='0';
+}
+
+iniciarJogo();
+buildKbd();
+</script>
+</body>
+</html>
