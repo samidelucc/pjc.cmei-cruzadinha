@@ -63,7 +63,7 @@ body{background:#1a0a00;font-family:'Nunito',sans-serif;min-height:100vh;overflo
 .btn-rst:hover{transform:translateY(-2px)}
 
 /* TECLADO */
-.kbd-box{background:#2d1200;border:2px solid #f4a261;border-radius:14px;padding:10px 12px;width:100%;max-width:420px;box-shadow:0 0 18px rgba(244,162,97,.25);overflow-x:auto}
+.kbd-box{background:#2d1200;border:2px solid #f4a261;border-radius:14px;padding:10px 12px;box-shadow:0 0 18px rgba(244,162,97,.25);overflow-x:auto}
 .kbd-box h3{font-family:'Fredoka One',cursive;color:#f4a261;font-size:.95rem;text-align:center;margin-bottom:8px;text-shadow:2px 2px 0 #7c3003}
 .kbd-row{display:flex;justify-content:center;gap:8px;margin-bottom:9px;flex-wrap:nowrap}
 .key{flex:0 0 auto;width:26px;height:38px;background:#3d1a00;border:2px solid #5a3000;border-radius:6px;color:#f4a261;font-family:'Fredoka One',cursive;font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .08s,border-color .08s,transform .08s;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
@@ -177,10 +177,19 @@ body{background:#1a0a00;font-family:'Nunito',sans-serif;min-height:100vh;overflo
 
 <div class="main">
   <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:flex-start;width:100%;max-width:700px">
-    <!-- GRADE -->
-    <div class="grid-box">
-      <h3>🎯 Cruzadinha</h3>
-      <div class="grid" id="grid"></div>
+    <!-- COLUNA ESQUERDA: GRADE + TECLADO -->
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:center">
+      <div class="grid-box">
+        <h3>🎯 Cruzadinha</h3>
+        <div class="grid" id="grid"></div>
+      </div>
+      <!-- TECLADO -->
+      <div class="kbd-box">
+        <h3>⌨️ Teclado</h3>
+        <div class="kbd-row" id="kr1"></div>
+        <div class="kbd-row" id="kr2"></div>
+        <div class="kbd-row" id="kr3"></div>
+      </div>
     </div>
     <!-- DICAS -->
     <div class="dicas-box" style="flex:1;min-width:180px">
@@ -194,14 +203,6 @@ body{background:#1a0a00;font-family:'Nunito',sans-serif;min-height:100vh;overflo
         <button class="btn btn-rst" onclick="reiniciar()">🔄 Nova Cruzadinha</button>
       </div>
     </div>
-  </div>
-
-  <!-- TECLADO -->
-  <div class="kbd-box">
-    <h3>⌨️ Teclado</h3>
-    <div class="kbd-row" id="kr1"></div>
-    <div class="kbd-row" id="kr2"></div>
-    <div class="kbd-row" id="kr3"></div>
   </div>
 </div>
 
